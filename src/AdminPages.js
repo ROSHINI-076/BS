@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Users, UserPlus, CheckCircle, XCircle, Clock, UserCheck, Eye } from 'lucide-react';
+import './AdminPages.css'; 
+
+
+
+
+
 
 // Configuration
 const API_BASE_URL = 'http://localhost:3050';
@@ -101,46 +107,68 @@ const AdminPages = ({ currentPage: initialPage, setCurrentPage: setMainPage }) =
   };
 
   // Admin Dashboard Component
-  const AdminDashboard = () => {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">
-              Admin Dashboard
-            </h1>
-            <p className="text-gray-300 text-lg">Manage your banking system</p>
-          </div>
+ // Replace your AdminDashboard component with this fixed version:
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-            {menuItems.map((item) => {
-              const IconComponent = item.icon;
-              return (
-                <div
-                  key={item.id}
-                  onClick={() => setCurrentPage(item.id)}
-                  className={`relative overflow-hidden bg-gradient-to-br ${item.gradient} rounded-2xl p-8 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-3xl group`}
-                >
-                  <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-10 transition-all duration-300"></div>
-                  <div className="relative z-10">
-                    <div className="flex items-center mb-4">
-                      <IconComponent className="w-8 h-8 text-white mr-3" />
-                      <h3 className="text-xl font-bold text-white">{item.title}</h3>
-                    </div>
-                    <p className="text-white text-opacity-90 mb-6">{item.description}</p>
-                    <div className="flex items-center text-white font-semibold">
-                      <span className="mr-2">Access</span>
-                      <ArrowLeft className="w-4 h-4 rotate-180 group-hover:translate-x-1 transition-transform" />
-                    </div>
+const AdminDashboard = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">
+            Admin Dashboard
+          </h1>
+          <p className="text-gray-300 text-lg">Manage your banking system</p>
+        </div>
+
+        {/* Menu Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {menuItems.map((item) => {
+            const IconComponent = item.icon;
+            return (
+              <div
+                key={item.id}
+                onClick={() => setCurrentPage(item.id)}
+                className={`relative overflow-hidden bg-gradient-to-br ${item.gradient} rounded-2xl p-8 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-3xl group min-h-[200px] flex flex-col justify-between`}
+              >
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-10 transition-all duration-300"></div>
+                
+                {/* Card Content */}
+                <div className="relative z-10 flex flex-col h-full">
+                  {/* Icon and Title */}
+                  <div className="flex items-center mb-4">
+                    <IconComponent className="w-8 h-8 text-white mr-3 flex-shrink-0" />
+                    <h3 className="text-xl font-bold text-white">{item.title}</h3>
+                  </div>
+                  
+                  {/* Description */}
+                  <p className="text-white text-opacity-90 mb-6 flex-grow">{item.description}</p>
+                  
+                  {/* Access Button */}
+                  <div className="flex items-center text-white font-semibold mt-auto">
+                    <span className="mr-2">Access</span>
+                    <ArrowLeft className="w-4 h-4 rotate-180 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Back to Main Button */}
+        <div className="text-center mt-12">
+          <button
+            onClick={handleBackToMain}
+            className="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-6 py-3 rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+          >
+            Back to Main
+          </button>
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   // Create Employee Page
   const CreateEmployeePage = () => {
@@ -434,11 +462,11 @@ const AdminPages = ({ currentPage: initialPage, setCurrentPage: setMainPage }) =
       
       try {
         const assignmentData = {
-          customer_id: selectedCustomer,
-          employee_id: selectedEmployee
+          CUSTOMER_ID: selectedCustomer,
+          EMPLOYEE_ID: selectedEmployee
         };
         
-        await apiRequest('/admin/assign-employee', 'POST', assignmentData);
+        await apiRequest('/admin/assign-customer', 'POST', assignmentData);
         showMessage('Employee assigned successfully!', 'success');
         setSelectedCustomer('');
         setSelectedEmployee('');
@@ -625,3 +653,4 @@ const AdminPages = ({ currentPage: initialPage, setCurrentPage: setMainPage }) =
 };
 
 export default AdminPages;
+
