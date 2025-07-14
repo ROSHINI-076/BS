@@ -204,193 +204,209 @@ const BankingPortal = () => {
     );
   };
 
-  const CustomerRegisterPage = () => {
-    const [formData, setFormData] = useState({
-      fullname: '',
-      dob: '',
-      gender: '',
-      nationality: '',
-      occupation: '',
-      address: '',
-      phonenumber: '',
-      email: '',
-      aadhar: '',
-      utility_bill: ''
-    });
+ // Updated CustomerRegisterPage component - replace your existing one
 
-    const handleInputChange = (e) => {
-      const { name, value } = e.target;
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    };
+const CustomerRegisterPage = () => {
+  const [formData, setFormData] = useState({
+    FULLNAME: '',         // Matches backend API
+    DOB: '',
+    GENDER: '',
+    NATIONALITY: '',
+    OCCUPATION: '',
+    ADDRESS: '',
+    PHONENUMBER: '',      // Matches backend API
+    EMAIL_ADDRESS: '',    // Matches backend API
+    AADHAR_NUMBER: '',    // Matches backend API
+    UTILITY_BILL: ''
+  });
 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      setLoading(true);
-      
-      try {
-        // Add API call for customer registration here
-        showMessage('Registration submitted successfully!', 'success');
-        setFormData({
-          fullname: '',
-          dob: '',
-          gender: '',
-          nationality: '',
-          occupation: '',
-          address: '',
-          phonenumber: '',
-          email: '',
-          aadhar: '',
-          utility_bill: ''
-        });
-      } catch (error) {
-        showMessage('Registration failed. Please try again.', 'error');
-        console.error('Registration error:', error);
-      }
-      
-      setLoading(false);
-    };
-
-    return (
-      <div>
-        <button
-          onClick={() => setCurrentPage('home')}
-          className="bg-gradient-to-r from-pink-400 to-red-400 text-white px-4 py-2 rounded-lg mb-4 inline-flex items-center gap-2 text-sm"
-        >
-          <ArrowLeft size={16} /> Back to Home
-        </button>
-        <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">Customer Registration</h2>
-        <Message message={message.text} type={message.type} />
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Full Name</label>
-            <input
-              type="text"
-              name="fullname"
-              value={formData.fullname}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Date of Birth</label>
-            <input
-              type="date"
-              name="dob"
-              value={formData.dob}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Gender</label>
-            <select
-              name="gender"
-              value={formData.gender}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
-              required
-            >
-              <option value="">Select Gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Nationality</label>
-            <input
-              type="text"
-              name="nationality"
-              value={formData.nationality}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Occupation</label>
-            <input
-              type="text"
-              name="occupation"
-              value={formData.occupation}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Address</label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Phone Number</label>
-            <input
-              type="tel"
-              name="phonenumber"
-              value={formData.phonenumber}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Email Address</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Aadhar Number</label>
-            <input
-              type="text"
-              name="aadhar"
-              value={formData.aadhar}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Utility Bill Amount</label>
-            <input
-              type="number"
-              step="0.01"
-              name="utility_bill"
-              value={formData.utility_bill}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 px-6 rounded-lg font-medium hover:transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Submitting...' : 'Submit Registration'}
-          </button>
-        </form>
-      </div>
-    );
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    try {
+      // Make sure the API endpoint matches your backend
+      console.log('Submitting registration data:', formData); // Debug log
+      
+      const response = await apiRequest('/customer/register', 'POST', formData);
+      
+      // Log the response to see what's returned
+      console.log('Registration response:', response);
+      
+      showMessage('Registration submitted successfully!', 'success');
+      
+      // Reset form
+      setFormData({
+        FULLNAME: '',
+        DOB: '',
+        GENDER: '',
+        NATIONALITY: '',
+        OCCUPATION: '',
+        ADDRESS: '',
+        PHONENUMBER: '',
+        EMAIL_ADDRESS: '',
+        AADHAR_NUMBER: '',
+        UTILITY_BILL: ''
+      });
+      
+    } catch (error) {
+      showMessage('Registration failed. Please try again.', 'error');
+      console.error('Registration error:', error);
+      
+      // Log more details about the error
+      if (error.response) {
+        console.error('Error response:', error.response);
+      }
+    }
+    
+    setLoading(false);
+  };
+
+  return (
+    <div>
+      <button
+        onClick={() => setCurrentPage('home')}
+        className="bg-gradient-to-r from-pink-400 to-red-400 text-white px-4 py-2 rounded-lg mb-4 inline-flex items-center gap-2 text-sm"
+      >
+        <ArrowLeft size={16} /> Back to Home
+      </button>
+      <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">Customer Registration</h2>
+      <Message message={message.text} type={message.type} />
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Full Name</label>
+          <input
+            type="text"
+            name="FULLNAME"
+            value={formData.FULLNAME}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Date of Birth</label>
+          <input
+            type="date"
+            name="DOB"
+            value={formData.DOB}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Gender</label>
+          <select
+            name="GENDER"
+            value={formData.GENDER}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
+            required
+          >
+            <option value="">Select Gender</option>
+            <option value="MALE">Male</option>
+            <option value="FEMALE">Female</option>
+            <option value="OTHER">Other</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Nationality</label>
+          <input
+            type="text"
+            name="NATIONALITY"
+            value={formData.NATIONALITY}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Occupation</label>
+          <input
+            type="text"
+            name="OCCUPATION"
+            value={formData.OCCUPATION}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Address</label>
+          <input
+            type="text"
+            name="ADDRESS"
+            value={formData.ADDRESS}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Phone Number</label>
+          <input
+            type="tel"
+            name="PHONENUMBER"
+            value={formData.PHONENUMBER}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Email Address</label>
+          <input
+            type="email"
+            name="EMAIL_ADDRESS"
+            value={formData.EMAIL_ADDRESS}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Aadhar Number</label>
+          <input
+            type="text"
+            name="AADHAR_NUMBER"
+            value={formData.AADHAR_NUMBER}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Utility Bill Amount</label>
+          <input
+            type="number"
+            step="0.01"
+            name="UTILITY_BILL"
+            value={formData.UTILITY_BILL}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 px-6 rounded-lg font-medium hover:transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {loading ? 'Submitting...' : 'Submit Registration'}
+        </button>
+      </form>
+    </div>
+  );
+};
   const AdminDashboard = () => (
     <div>
       <button
@@ -515,10 +531,10 @@ const renderPage = () => {
     case 'view_employees':
       return <AdminPages currentPage={currentPage} setCurrentPage={setCurrentPage} />;
     case 'employee_dashboard':
-      return <EmployeeDashboard />;
+    return <EmployeeDashboard />;
 
     case 'customer_dashboard':
-  
+
       return <CustomerDashboard />;
     default:
       return <HomePage />;
