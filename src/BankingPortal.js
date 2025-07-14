@@ -99,40 +99,19 @@ const BankingPortal = () => {
   }, []);
 
   // Page Components
-  const HomePage = () => (
-    <div className="text-center">
-      <h1 className="text-4xl font-semibold mb-6 bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
-        Welcome to Banking Sector Portal
-      </h1>
-      <p className="text-gray-600 mb-8">Select your role to continue:</p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <button
-          onClick={() => showLogin('admin')}
-          className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-4 px-8 rounded-xl font-medium hover:transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl"
-        >
-          Admin
-        </button>
-        <button
-          onClick={() => showLogin('employee')}
-          className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-4 px-8 rounded-xl font-medium hover:transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl"
-        >
-          Employee
-        </button>
-        <button
-          onClick={() => showLogin('customer')}
-          className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-4 px-8 rounded-xl font-medium hover:transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl"
-        >
-          Customer
-        </button>
-        <button
-          onClick={() => setCurrentPage('customer_register')}
-          className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-4 px-8 rounded-xl font-medium hover:transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl"
-        >
-          New Customer Registration
-        </button>
-      </div>
+ const HomePage = () => (
+  <>
+    <h1 className="portal-heading">Welcome to Banking Sector Portal</h1>
+    <p className="portal-subtext">Select your role to continue:</p>
+    <div className="button-grid">
+      <button onClick={() => showLogin('admin')} className="portal-button">Admin</button>
+      <button onClick={() => showLogin('employee')} className="portal-button">Employee</button>
+      <button onClick={() => showLogin('customer')} className="portal-button">Customer</button>
+      <button onClick={() => setCurrentPage('customer_register')} className="portal-button">New Customer Registration</button>
     </div>
-  );
+  </>
+);
+
 
   const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -547,13 +526,15 @@ const renderPage = () => {
 };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-indigo-600 flex items-center justify-center p-4">
-      <ApiStatus isOnline={apiOnline} />
-      <div className="bg-white/95 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-white/20 max-w-2xl w-full mx-4">
-        {renderPage()}
-      </div>
+  <div className="bank-portal-container">
+    <ApiStatus isOnline={apiOnline} />
+    <div className="portal-card">
+      {renderPage()}
     </div>
-  );
+  </div>
+);
+
+
 };
 
 export default BankingPortal;
