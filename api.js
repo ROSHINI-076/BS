@@ -1,6 +1,6 @@
 const express = require('express'); 
 const cors = require('cors'); 
-const mysql = require('mysql'); 
+const mysql = require('mysql2'); 
 const app = express(); 
 const port = 3050; 
 
@@ -10,10 +10,10 @@ app.use(express.json()); // Add this to parse JSON request bodies
 const connection = mysql.createConnection({   
   host: 'localhost',   
   user: 'root',   
-  password: 'manager',   
-  database: 'banking_sector' 
-});   
-
+  password: 'Shivani@mysql',   
+  database: 'banking' 
+});  
+ 
 connection.connect((err) => {   
   if (err) {     
     console.error('Error connecting to MySQL:', err.stack);     
@@ -168,6 +168,95 @@ app.get('/customer/pending', (req, res) => {
     }
     
     res.json(results);
+  });
+});
+
+//SHIVANI
+//customers
+app.get('/customers', (req, res) => {
+  connection.query('SELECT * FROM CUSTOMER_DETAILS', (err, results) => {
+    if (err) return res.status(500).json({ error: 'DB error' });
+    res.json(results);
+  });
+});
+
+//POST FOR APPROVAL
+app.post('/customer/register', (req, res) => {
+  const {
+    FULLNAME, DOB, GENDER, NATIONALITY, OCCUPATION,
+    ADDRESS, PHONE, EMAIL, AADHAR_NUMBER, UTILITY_BILL
+  } = req.body;
+
+  const query = `
+    INSERT INTO CUSTOMER_DETAILS (
+      FULLNAME, DOB, GENDER, NATIONALITY, OCCUPATION,
+      ADDRESS, PHONENUMBER, EMAIL_ADDRESS, AADHAR_NUMBER, UTILITY_BILL, STATUS
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+  `;
+
+  const values = [
+    FULLNAME, DOB, GENDER, NATIONALITY, OCCUPATION,
+    ADDRESS, PHONE, EMAIL, AADHAR_NUMBER, UTILITY_BILL
+  ];
+
+  connection.query(query, values, (err, result) => {
+    if (err) {
+      console.error('Customer registration failed:', err);
+      return res.status(500).json({ error: 'Registration failed' });
+    }
+    res.status(201).json({ message: 'Customer registered successfully' });
+  });
+});
+
+
+//APPROVE
+app.post('/customer/approve/:id', (req, res) => {
+  const id = req.params.id;
+  const query = 'UPDATE CUSTOMER_DETAILS SET STATUS = "APPROVED" WHERE CUSTOMER_ID = ?';
+  connection.query(query, [id], (err, result) => {
+    if (err) return res.status(500).json({ error: 'Approval failed' });
+    res.json({ message: 'Approved successfully' });
+  });
+});
+//REJECT
+app.post('/customer/reject/:id', (req, res) => {
+  const id = req.params.id;
+  const query = 'UPDATE CUSTOMER_DETAILS SET STATUS = "REJECTED" WHERE CUSTOMER_ID = ?';
+  connection.query(query, [id], (err, result) => {
+    if (err) return res.status(500).json({ error: 'Rejection failed' });
+    res.json({ message: 'Rejected successfully' });
+  });
+});
+
+//GET customer by userid for profile(enter custid for profile)
+  app.get('/customer/by-userid/:user_id', (req, res) => {
+  const userId = req.params.user_id;
+
+  const query = `
+    SELECT c.*, l.USERNAME
+    FROM CUSTOMER_DETAILS c
+    JOIN LOGIN l ON c.USER_ID = l.USER_ID
+    WHERE c.USER_ID = ?
+  `;
+  connection.query(query, [userId], (error, results) => {
+    if (error) {
+      console.error('Error fetching customer by user ID:', error);
+      return res.status(500).json({ error: 'Error fetching customer info' });
+    }
+    res.json(results);
+  });
+});
+
+//list customers to assign
+app.get('/customer/list', (req, res) => {
+  const query = 'SELECT FULLNAME FROM CUSTOMER_DETAILS';
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching customers:', err);
+      return res.status(500).json({ error: 'Failed to fetch customers' });
+    }
+    res.json(results);  // returns name
   });
 });
 
