@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { AlertCircle, CheckCircle, Users, UserPlus, Settings, User, LogOut, Home, ArrowLeft } from 'lucide-react';
 import AdminPages from './AdminPages';
+import CustomerPages from './CustomerPages';
 import './BankingPortal.css'; 
 // Configuration
 const API_BASE_URL = 'http://localhost:3050';
@@ -534,13 +535,17 @@ const renderPage = () => {
     return <EmployeeDashboard />;
 
     case 'customer_dashboard':
-
+    case 'make_transaction':
+    case 'transaction_history':
+    case 'profile':
+    case 'customer_support':
+      return <CustomerPages currentPage={currentPage} setCurrentPage={setCurrentPage} customerId={currentUser.ID} />;
       return <CustomerDashboard />;
+
     default:
       return <HomePage />;
   }
 };
-
   return (
   <div className="bank-portal-container">
     <ApiStatus isOnline={apiOnline} />
@@ -549,8 +554,6 @@ const renderPage = () => {
     </div>
   </div>
 );
-
-
 };
 
 export default BankingPortal;
