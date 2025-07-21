@@ -1,19 +1,19 @@
 const express = require('express'); 
 const cors = require('cors'); 
-const mysql = require('mysql2'); 
+const mysql = require('mysql'); 
 const app = express(); 
 const port = 3050; 
 
 app.use(cors());
-app.use(express.json()); // Add this to parse JSON request bodies
+app.use(express.json()); // Parse JSON request bodies
 
 const connection = mysql.createConnection({   
   host: 'localhost',   
   user: 'root',   
-  password: 'Shivani@mysql',   
-  database: 'banking' 
-});  
- 
+  password: 'manager',   
+  database: 'banking_sector' 
+});   
+
 connection.connect((err) => {   
   if (err) {     
     console.error('Error connecting to MySQL:', err.stack);     
@@ -22,54 +22,53 @@ connection.connect((err) => {
   console.log('Connected to MySQL as id ' + connection.threadId); 
 });  
 
-// Existing endpoints - Updated to match your schema
+// Get all login data
 app.get('/Login', (req, res) => {   
   connection.query('SELECT * FROM LOGIN', (error, results) => {     
-    if (error) {       
-      console.error('Error executing query:', error);       
-      res.status(500).send('Error fetching user');       
-      return;     
+    if (error) {
+      console.error('Error executing query:', error);
+      return res.status(500).send('Error fetching user');     
     }     
     res.json(results);   
   }); 
 });    
 
+// Get login by username
 app.get('/Login/by-username/:Username', (req, res) => {  
   const Username = req.params.Username;   
   connection.query('SELECT * FROM LOGIN WHERE USERNAME=?', [Username], (error, results) => {     
-    if (error) {       
-      console.error('Error executing query:', error);       
-      res.status(500).send('Error fetching user');       
-      return;     
+    if (error) {
+      console.error('Error executing query:', error);
+      return res.status(500).send('Error fetching user');     
     }     
     res.json(results);   
   }); 
 });   
 
+// Get username by user ID
 app.get('/Login/by-userid/:USER_ID', (req, res) => {   
   const User_Id = req.params.USER_ID;   
   connection.query('SELECT USERNAME FROM LOGIN WHERE USER_ID=?', [User_Id], (error, results) => {     
-    if (error) {       
-      console.error('Error executing query:', error);       
-      res.status(500).send('Error fetching user');       
-      return;     
+    if (error) {
+      console.error('Error executing query:', error);
+      return res.status(500).send('Error fetching user');     
     }     
     res.json(results);   
   }); 
 });  
 
+// Get all bank accounts
 app.get('/bankaccount', (req, res) => {   
   connection.query('SELECT * FROM BANKACCOUNT', (error, results) => {     
-    if (error) {       
-      console.error('Error executing query:', error);       
-      res.status(500).send('Error fetching accounts');       
-      return;     
+    if (error) {
+      console.error('Error executing query:', error);
+      return res.status(500).send('Error fetching accounts');     
     }     
     res.json(results);   
   }); 
 });    
 
-// Get all employees - MOVED TO CORRECT POSITION
+// Get all employees
 app.get('/employees', (req, res) => {
   const query = 'SELECT e.*, l.USERNAME FROM EMPLOYEE e JOIN LOGIN l ON e.USER_ID = l.USER_ID';
   connection.query(query, (error, results) => {
@@ -81,11 +80,15 @@ app.get('/employees', (req, res) => {
   });
 });
 
-// Customer registration
+/*Register customer
 app.post('/customer/register', (req, res) => {
   const { FULLNAME, DOB, GENDER, NATIONALITY, OCCUPATION, ADDRESS, PHONENUMBER, EMAIL_ADDRESS, AADHAR_NUMBER, UTILITY_BILL } = req.body;
   
-  const query = `INSERT INTO CUSTOMER_DETAILS (FULLNAME, DOB, GENDER, NATIONALITY, OCCUPATION, ADDRESS, PHONENUMBER, EMAIL_ADDRESS, AADHAR_NUMBER, UTILITY_BILL, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`;
+  const query = `
+    INSERT INTO CUSTOMER_DETAILS 
+    (FULLNAME, DOB, GENDER, NATIONALITY, OCCUPATION, ADDRESS, PHONENUMBER, EMAIL_ADDRESS, AADHAR_NUMBER, UTILITY_BILL, STATUS) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+  `;
   
   connection.query(query, [FULLNAME, DOB, GENDER, NATIONALITY, OCCUPATION, ADDRESS, PHONENUMBER, EMAIL_ADDRESS, AADHAR_NUMBER, UTILITY_BILL], (error, results) => {
     if (error) {
@@ -94,37 +97,32 @@ app.post('/customer/register', (req, res) => {
     }
     res.status(201).json({ message: 'Customer registered successfully', customerId: results.insertId });
   });
-});
+});*/
 
-// NEW ADMIN APIs
-
-// 1. Create employee login - POST /admin/create-employee
+// Create employee login
 app.post('/admin/create-employee', (req, res) => {
   const { USERNAME, PASSWORD, FULL_NAME, EMAIL, PHONE } = req.body;
-  
-  // Validate required fields
+
   if (!USERNAME || !PASSWORD) {
     return res.status(400).json({ error: 'USERNAME and PASSWORD are required' });
   }
-  
-  // Insert into LOGIN table
+
   const loginQuery = 'INSERT INTO LOGIN (USERNAME, PASSWORD, ROLE) VALUES (?, ?, ?)';
   connection.query(loginQuery, [USERNAME, PASSWORD, 'employee'], (error, loginResults) => {
     if (error) {
       console.error('Error creating login:', error);
       return res.status(500).json({ error: 'Error creating employee login' });
     }
-    
+
     const userId = loginResults.insertId;
-    
-    // Insert into EMPLOYEE table
+
     const employeeQuery = 'INSERT INTO EMPLOYEE (USER_ID, FULL_NAME, EMAIL, PHONE) VALUES (?, ?, ?, ?)';
     connection.query(employeeQuery, [userId, FULL_NAME, EMAIL, PHONE], (empError, empResults) => {
       if (empError) {
         console.error('Error creating employee record:', empError);
         return res.status(500).json({ error: 'Error creating employee record' });
       }
-      
+
       res.status(201).json({ 
         message: 'Employee login created successfully',
         userId: userId,
@@ -134,7 +132,7 @@ app.post('/admin/create-employee', (req, res) => {
   });
 });
 
-// 2. View pending customers - GET /customer/pending
+// View pending customers
 app.get('/customer/pending', (req, res) => {
   const query = `
     SELECT 
@@ -160,13 +158,13 @@ app.get('/customer/pending', (req, res) => {
     LEFT JOIN BANKACCOUNT ba ON cd.CUSTOMER_ID = ba.CUSTOMER_ID 
     WHERE cd.STATUS = 'pending'
   `;
-  
+
   connection.query(query, (error, results) => {
     if (error) {
       console.error('Error fetching pending customers:', error);
       return res.status(500).json({ error: 'Error fetching pending customers' });
     }
-    
+
     res.json(results);
   });
 });
@@ -212,7 +210,7 @@ app.post('/customer/register', (req, res) => {
 //APPROVE
 app.post('/customer/approve/:id', (req, res) => {
   const id = req.params.id;
-  const query = 'UPDATE CUSTOMER_DETAILS SET STATUS = "APPROVED" WHERE CUSTOMER_ID = ?';
+  const query = 'UPDATE CUSTOMER_DETAILS SET STATUS = "verified" WHERE CUSTOMER_ID = ?';
   connection.query(query, [id], (err, result) => {
     if (err) return res.status(500).json({ error: 'Approval failed' });
     res.json({ message: 'Approved successfully' });
@@ -221,7 +219,7 @@ app.post('/customer/approve/:id', (req, res) => {
 //REJECT
 app.post('/customer/reject/:id', (req, res) => {
   const id = req.params.id;
-  const query = 'UPDATE CUSTOMER_DETAILS SET STATUS = "REJECTED" WHERE CUSTOMER_ID = ?';
+  const query = 'UPDATE CUSTOMER_DETAILS SET STATUS = "rejected" WHERE CUSTOMER_ID = ?';
   connection.query(query, [id], (err, result) => {
     if (err) return res.status(500).json({ error: 'Rejection failed' });
     res.json({ message: 'Rejected successfully' });
@@ -249,7 +247,7 @@ app.post('/customer/reject/:id', (req, res) => {
 
 //list customers to assign
 app.get('/customer/list', (req, res) => {
-  const query = 'SELECT FULLNAME FROM CUSTOMER_DETAILS';
+  const query = 'SELECT CUSTOMER_ID,FULLNAME FROM CUSTOMER_DETAILS';
 
   connection.query(query, (err, results) => {
     if (err) {
@@ -260,43 +258,39 @@ app.get('/customer/list', (req, res) => {
   });
 });
 
-// 3. Assign employee to customer - POST /admin/assign-customer
+// Assign employee to customer
 app.post('/admin/assign-customer', (req, res) => {
   const { EMPLOYEE_ID, CUSTOMER_ID } = req.body;
-  
-  // Validate required fields
+
   if (!EMPLOYEE_ID || !CUSTOMER_ID) {
     return res.status(400).json({ error: 'EMPLOYEE_ID and CUSTOMER_ID are required' });
   }
-  
-  // First check if customer exists and is pending
+
   connection.query('SELECT * FROM CUSTOMER_DETAILS WHERE CUSTOMER_ID = ?', [CUSTOMER_ID], (checkError, customerResults) => {
     if (checkError) {
       console.error('Error checking customer:', checkError);
       return res.status(500).json({ error: 'Error validating customer' });
     }
-    
+
     if (customerResults.length === 0) {
       return res.status(404).json({ error: 'Customer not found' });
     }
-    
-    // Check if employee exists
+
     connection.query('SELECT * FROM EMPLOYEE WHERE EMPLOYEE_ID = ?', [EMPLOYEE_ID], (empError, empResults) => {
       if (empError) {
         console.error('Error checking employee:', empError);
         return res.status(500).json({ error: 'Error validating employee' });
       }
-      
+
       if (empResults.length === 0) {
         return res.status(404).json({ error: 'Employee not found' });
       }
-      
-      // Insert into EMPLOYEE_CUSTOMER_ASSIGNMENT table
+
       const assignQuery = `
         INSERT INTO EMPLOYEE_CUSTOMER_ASSIGNMENT (EMPLOYEE_ID, CUSTOMER_ID) 
         VALUES (?, ?)
       `;
-      
+
       connection.query(assignQuery, [EMPLOYEE_ID, CUSTOMER_ID], (error, results) => {
         if (error) {
           console.error('Error assigning customer to employee:', error);
@@ -305,7 +299,7 @@ app.post('/admin/assign-customer', (req, res) => {
           }
           return res.status(500).json({ error: 'Error assigning customer to employee' });
         }
-        
+
         res.status(201).json({ 
           message: 'Customer assigned to employee successfully',
           employeeId: EMPLOYEE_ID,
@@ -318,6 +312,47 @@ app.post('/admin/assign-customer', (req, res) => {
   });
 });
 
+//employee
+// GET Assigned Customers for an Employee
+app.get('/employee/:id/customers', (req, res) => {
+  const employeeId = req.params.id;
+
+  const query = `
+    SELECT cd.CUSTOMER_ID, cd.FULLNAME, cd.EMAIL_ADDRESS, cd.PHONENUMBER, cd.STATUS
+    FROM CUSTOMER_DETAILS cd
+    JOIN EMPLOYEE_CUSTOMER_ASSIGNMENT eca ON cd.CUSTOMER_ID = eca.CUSTOMER_ID
+    WHERE eca.EMPLOYEE_ID = ?
+  `;
+
+  connection.query(query, [employeeId], (error, results) => {
+    if (error) {
+      console.error('Error fetching assigned customers:', error);
+      return res.status(500).json({ error: 'Error fetching assigned customers' });
+    }
+    res.json(results);
+  });
+});
+
+// POST Create New Bank Account
+app.post('/account', (req, res) => {
+  const { customer_id, account_type, initial_deposit } = req.body;
+
+  const insertQuery = `
+    INSERT INTO BANKACCOUNT (CUSTOMER_ID, ACCOUNT_TYPE, INITIAL_DEPOSIT, IFSC_CODE, DATE_OF_CREATION)
+    VALUES (?, ?, ?, 'BANK000123', CURDATE())
+  `;
+
+  connection.query(insertQuery, [customer_id, account_type, initial_deposit], (error, result) => {
+    if (error) {
+      console.error('Error creating account:', error);
+      return res.status(500).json({ error: 'Error creating account' });
+    }
+
+    res.status(201).json({ message: 'Account created successfully', accountId: result.insertId });
+  });
+});
+
 app.listen(port, () => {     
   console.log(`Server listening at http://localhost:${port}`); 
 });
+
