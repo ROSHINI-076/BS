@@ -2,8 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { AlertCircle, CheckCircle, Users, UserPlus, Settings, User, LogOut, Home, ArrowLeft } from 'lucide-react';
 import AdminPages from './AdminPages';
-import CustomerPages from './CustomerPages';
+import AssignedCustomers from './AssignedCustomers';
+import CreateAccount from './CreateAccount';
+
 import './BankingPortal.css'; 
+
 // Configuration
 const API_BASE_URL = 'http://localhost:3050';
 
@@ -139,26 +142,44 @@ const BankingPortal = () => {
           if (user) {
             if (user.ROLE === currentRole) {
               setCurrentUser({ ...user, role: currentRole });
-              if (currentRole === 'employee') {
-                setCurrentPage('employee_dashboard');
-              } else if (currentRole === 'customer') {
-                setCurrentPage('customer_dashboard');
+             if (currentRole === 'employee') {
+            try {
+              const employees = await apiRequest('/employees');
+              const employee = employees.find(emp => emp.USER_ID === user.USER_ID);
+              if (employee) {
+                setCurrentUser({ 
+                  ...user, 
+                  role: currentRole, 
+                  EMPLOYEE_ID: employee.EMPLOYEE_ID,
+                  FULL_NAME: employee.FULL_NAME
+                });
+              } else {
+                setCurrentUser({ ...user, role: currentRole });
               }
-              showMessage('Login successful!', 'success');
-            } else {
-              showMessage(`This user is not registered as ${currentRole}!`, 'error');
+            } catch (empError) {
+              console.log('Could not fetch employee details, using USER_ID');
+              setCurrentUser({ ...user, role: currentRole });
             }
-          } else {
-            showMessage('Invalid credentials!', 'error');
+            setCurrentPage('employee_dashboard');
+          } else if (currentRole === 'customer') {
+            setCurrentUser({ ...user, role: currentRole });
+            setCurrentPage('customer_dashboard');
           }
+          showMessage('Login successful!', 'success');
+        } else {
+          showMessage(`This user is not registered as ${currentRole}!`, 'error');
         }
-      } catch (error) {
-        showMessage('Login failed. Please check your connection.', 'error');
-        console.error('Login error:', error);
+      } else {
+        showMessage('Invalid credentials!', 'error');
       }
-      
-      setLoginLoading(false);
-    };
+    }
+  } catch (error) {
+    showMessage('Login failed. Please check your connection.', 'error');
+    console.error('Login error:', error);
+  }
+  
+  setLoginLoading(false);
+};
 
     return (
       <div>
@@ -516,7 +537,6 @@ const CustomerRegisterPage = () => {
     </div>
   );
 
-// Render current page
 const renderPage = () => {
   switch (currentPage) {
     case 'home':
@@ -525,27 +545,45 @@ const renderPage = () => {
       return <LoginPage />;
     case 'customer_register':
       return <CustomerRegisterPage />;
+
+    // Admin views
     case 'admin_dashboard':
     case 'create_employee':
     case 'manage_customers':
     case 'assign_employee':
     case 'view_employees':
       return <AdminPages currentPage={currentPage} setCurrentPage={setCurrentPage} />;
-    case 'employee_dashboard':
-    return <EmployeeDashboard />;
 
+    // Employee views
+    case 'employee_dashboard':
+      return <EmployeeDashboard />;
+    case 'assigned_customers':
+      
+   // Try EMPLOYEE_ID first, then fall back to USER_ID
+      const employeeId = currentUser?.EMPLOYEE_ID || currentUser?.USER_ID;
+      console.log('AssignedCustomers employeeId =', employeeId);
+      console.log('Current user:', currentUser);
+      return (
+        <AssignedCustomers 
+          employeeId={employeeId}
+          setCurrentPage={setCurrentPage}
+        />
+      );
+    case 'create_account':
+      return <CreateAccount setCurrentPage={setCurrentPage} />;
+    case 'create_account':
+      return <CreateAccount />;
+
+    // Customer view
     case 'customer_dashboard':
-    case 'make_transaction':
-    case 'transaction_history':
-    case 'profile':
-    case 'customer_support':
-      return <CustomerPages currentPage={currentPage} setCurrentPage={setCurrentPage} customerId={currentUser.ID} />;
       return <CustomerDashboard />;
 
     default:
       return <HomePage />;
   }
 };
+
+
   return (
   <div className="bank-portal-container">
     <ApiStatus isOnline={apiOnline} />
@@ -554,6 +592,8 @@ const renderPage = () => {
     </div>
   </div>
 );
+
+
 };
 
 export default BankingPortal;
