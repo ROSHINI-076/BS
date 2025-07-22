@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Users, UserPlus, UserCheck, Eye } from 'lucide-react';
+import { ArrowLeft, Users, UserPlus, CheckCircle, XCircle, Clock, UserCheck, Eye } from 'lucide-react';
 
 // Configuration
 const API_BASE_URL = 'http://localhost:3050';
-
 
 // Utility Components
 const Message = ({ message, type }) => {
@@ -88,6 +87,7 @@ const AdminPages = ({ currentPage: initialPage, setCurrentPage: setMainPage }) =
       if (!response.ok) {
         throw new Error(`API Error: ${response.status} ${response.statusText}`);
       }
+
       return await response.json();
     } catch (error) {
       console.error('API Request failed:', error);
@@ -275,7 +275,6 @@ const AdminPages = ({ currentPage: initialPage, setCurrentPage: setMainPage }) =
       </div>
     );
   };
-
   // Manage Customers Page
   const ManageCustomersPage = () => {
     const [customers, setCustomers] = useState([]);
@@ -401,6 +400,7 @@ const AdminPages = ({ currentPage: initialPage, setCurrentPage: setMainPage }) =
     );
   };
 
+  
   // Assign Employee Page
   const AssignEmployeePage = () => {
     const [customers, setCustomers] = useState([]);
@@ -411,8 +411,9 @@ const AdminPages = ({ currentPage: initialPage, setCurrentPage: setMainPage }) =
 
     const loadAssignmentData = async () => {
       setLoading(true);
+      
       try {
-        // Load all customers (not just pending ones)
+        // Load customers
         const customerData = await apiRequest('/customer/list');
         setCustomers(customerData);
 
@@ -423,6 +424,7 @@ const AdminPages = ({ currentPage: initialPage, setCurrentPage: setMainPage }) =
         showMessage('Error loading assignment data. Please try again.', 'error');
         console.error('Load assignment data error:', error);
       }
+      
       setLoading(false);
     };
 
